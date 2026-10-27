@@ -1,4 +1,4 @@
-package com.fcbackend.app;
+package com.fcbackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

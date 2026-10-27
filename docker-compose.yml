@@ -1,0 +1,43 @@
+services:
+  tweet-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tweet-service
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_NAME: tweet-service-db
+      DATABASE_HOST: tweet-service-postgres
+      DATABASE_PORT: 5432
+    depends_on:
+      - tweet-service-postgres
+    networks:
+      - tweet-network
+
+  tweet-service-postgres:
+    image: postgres:17.2
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - tweet-service-volume:/var/lib/postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tweet-service-db
+    networks:
+      - tweet-network
+
+volumes:
+  tweet-service-volume:
+    name: tweet-service-volume
+
+networks:
+  tweet-network:
+    external: false
+    name: tweet-network

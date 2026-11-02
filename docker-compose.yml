@@ -13,6 +13,7 @@ services:
       DATABASE_NAME: tweet-service-db
       DATABASE_HOST: tweet-service-postgres
       DATABASE_PORT: 5432
+      PORT: 8080
     depends_on:
       - tweet-service-postgres
     networks:

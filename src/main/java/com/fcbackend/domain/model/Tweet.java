@@ -27,8 +27,6 @@ public class Tweet {
     private LocalDateTime updatedAt;
     private LocalDateTime discardedAt;
 
-    private Tweet() {}
-
     public static Tweet build(String message, String publisher) {
 
         Tweet tweet = Tweet.builder()
@@ -67,11 +65,11 @@ public class Tweet {
     }
 
     private static void selfValidate(Tweet tweet) {
-        if (tweet.publisher == null) {
+        if (tweet.publisher == null || tweet.publisher.isBlank()) {
             throw new BusinessException("publisher can't be null.");
         }
 
-        if (tweet.message == null) {
+        if (tweet.message == null || tweet.message.isBlank()) {
             throw new BusinessException("message can't be null.");
         }
 

@@ -2,6 +2,7 @@ package com.fcbackend.infrastructure.web.controller;
 
 import com.fcbackend.AbstractIntegrationTest;
 import com.fcbackend.domain.enums.TweetStatus;
+import com.fcbackend.infrastructure.persistence.entity.TweetEntity;
 import com.fcbackend.infrastructure.persistence.repository.TweetJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +38,7 @@ class TweetControllerTestIT extends AbstractIntegrationTest {
     void setUp() {
         repository.deleteAll();
     }
+
     @Nested
     @DisplayName("Tweet create endpoint tests")
     class Create {
@@ -157,6 +167,39 @@ class TweetControllerTestIT extends AbstractIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(request))
                     .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("Discard tweet endpoint tests")
+    class Discard {
+
+        @Test
+        void shouldDiscardTweetSuccessfully() throws Exception {
+            TweetEntity tweet = repository.save(TweetEntity.builder()
+                    .message("Foo Bar")
+                    .publisher("John Doe")
+                    .status(TweetStatus.ACTIVATED)
+                    .build());
+
+            mockMvc.perform(delete(BASE_URL + "/{id}", tweet.getId()))
+                    .andExpect(status().isNoContent());
+
+            TweetEntity discardedTweet = repository.findById(tweet.getId())
+                    .orElseThrow();
+
+            assertEquals(TweetStatus.DISCARDED, discardedTweet.getStatus());
+            assertNotNull(discardedTweet.getDiscardedAt());
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenTweetDoesNotExist() throws Exception {
+            UUID id = UUID.randomUUID();
+
+            mockMvc.perform(delete(BASE_URL + "/{id}", id))
+                    .andExpect(status().isNotFound());
+
+            assertTrue(repository.findById(id).isEmpty());
         }
     }
 }

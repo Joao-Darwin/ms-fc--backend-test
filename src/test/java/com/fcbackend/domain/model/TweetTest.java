@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,5 +172,38 @@ class TweetTest {
                 "message max length is 140 characters.",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    void shouldDiscardTweetSuccessfully() {
+        Tweet tweet = Tweet.build("Hello world!", "John Doe");
+
+        assertEquals(TweetStatus.ACTIVATED, tweet.getStatus());
+        assertNull(tweet.getDiscardedAt());
+
+        tweet.discard();
+
+        assertEquals(TweetStatus.DISCARDED, tweet.getStatus());
+        assertNotNull(tweet.getDiscardedAt());
+    }
+
+    @Test
+    void shouldNotChangeTweetWhenAlreadyDiscarded() {
+        LocalDateTime discardedAt = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
+
+        Tweet tweet = Tweet.rebuild(
+                UUID.randomUUID(),
+                "Hello world!",
+                "John Doe",
+                TweetStatus.DISCARDED,
+                LocalDateTime.now(),
+                null,
+                discardedAt
+        );
+
+        tweet.discard();
+
+        assertEquals(TweetStatus.DISCARDED, tweet.getStatus());
+        assertEquals(discardedAt, tweet.getDiscardedAt());
     }
 }

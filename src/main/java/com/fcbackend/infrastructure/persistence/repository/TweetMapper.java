@@ -13,6 +13,8 @@ public interface TweetMapper {
         tweetEntity.setPublisher(tweet.getPublisher());
         tweetEntity.setStatus(tweet.getStatus());
         tweetEntity.setDiscardedAt(tweet.getDiscardedAt());
+        tweetEntity.setCreatedAt(tweet.getCreatedAt());
+        tweetEntity.setUpdatedAt(tweet.getUpdatedAt());
 
         return tweetEntity;
     }

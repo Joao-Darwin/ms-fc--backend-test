@@ -3,6 +3,7 @@ package com.fcbackend.infrastructure.web.controller.docs;
 import com.fcbackend.infrastructure.web.dto.request.CreateTweetRequestDTO;
 import com.fcbackend.infrastructure.web.dto.response.CreateTweetResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+
+import java.util.UUID;
 
 @Tag(
         name = "Tweets",
@@ -59,5 +62,40 @@ public interface ITweetController {
                     )
             )
             CreateTweetRequestDTO request
+    );
+
+    @Operation(
+            summary = "Descartar tweet",
+            description = """
+                Descarta um tweet existente a partir do seu ID.
+
+                Regras de negócio:
+                - O tweet deve existir.
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Tweet descartado com sucesso."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Tweet não encontrado.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno inesperado.",
+                    content = @Content
+            )
+    })
+    ResponseEntity<Void> discard(
+            @Parameter(
+                    name = "id",
+                    description = "Identificador único (UUID) do tweet que será descartado.",
+                    required = true,
+                    example = "21988373-5257-4ea9-95ce-087c8a21ecdb"
+            )
+            UUID id
     );
 }

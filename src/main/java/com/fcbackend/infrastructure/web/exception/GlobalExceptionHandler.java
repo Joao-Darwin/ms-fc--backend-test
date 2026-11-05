@@ -1,5 +1,6 @@
 package com.fcbackend.infrastructure.web.exception;
 
+import com.fcbackend.application.exception.TweetNotFoundException;
 import com.fcbackend.domain.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
@@ -63,6 +64,27 @@ public class GlobalExceptionHandler {
         ));
 
         problem.setTitle("Business rule error");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        problem.setProperty("traceId", MDC.get("traceId"));
+
+        return problem;
+    }
+
+    @ExceptionHandler(TweetNotFoundException.class)
+    public ProblemDetail handleTweetNotFound(
+            TweetNotFoundException ex,
+            HttpServletRequest request) {
+
+        var problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+
+        problem.setType(URI.create(
+                "https://api.exemplo.com/problems/tweet-not-found"
+        ));
+
+        problem.setTitle("Tweet not found");
         problem.setInstance(URI.create(request.getRequestURI()));
         problem.setProperty("traceId", MDC.get("traceId"));
 

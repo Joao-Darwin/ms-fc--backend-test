@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -62,6 +63,15 @@ public class Tweet {
         selfValidate(tweet);
 
         return tweet;
+    }
+
+    public void discard() {
+        if (this.status == TweetStatus.DISCARDED) {
+            return;
+        }
+
+        this.status = TweetStatus.DISCARDED;
+        this.discardedAt = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
     }
 
     private static void selfValidate(Tweet tweet) {

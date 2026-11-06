@@ -2,13 +2,16 @@ package com.fcbackend.infrastructure.web.controller;
 
 import com.fcbackend.application.usecase.create.CreateTweetUseCase;
 import com.fcbackend.application.usecase.discard.DiscardTweetUseCase;
+import com.fcbackend.application.usecase.retrive.discarded.GetDiscardedTweetsUseCase;
 import com.fcbackend.infrastructure.web.controller.docs.ITweetController;
 import com.fcbackend.infrastructure.web.dto.request.CreateTweetRequestDTO;
 import com.fcbackend.infrastructure.web.dto.response.CreateTweetResponseDTO;
+import com.fcbackend.infrastructure.web.dto.response.DiscardedTweetsResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +26,15 @@ public class TweetController implements ITweetController {
 
     private final CreateTweetUseCase createTweetUseCase;
     private final DiscardTweetUseCase discardTweetUseCase;
+    private final GetDiscardedTweetsUseCase discardedTweetUseCase;
 
-    public TweetController(CreateTweetUseCase createTweetUseCase, DiscardTweetUseCase discardTweetUseCase) {
+    public TweetController(
+            CreateTweetUseCase createTweetUseCase,
+            DiscardTweetUseCase discardTweetUseCase,
+            GetDiscardedTweetsUseCase discardedTweetUseCase) {
         this.createTweetUseCase = createTweetUseCase;
         this.discardTweetUseCase = discardTweetUseCase;
+        this.discardedTweetUseCase = discardedTweetUseCase;
     }
 
     @Override
@@ -43,5 +51,11 @@ public class TweetController implements ITweetController {
         discardTweetUseCase.execute(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Override
+    @GetMapping("/discarded")
+    public ResponseEntity<DiscardedTweetsResponseDTO> getDiscarded() {
+        return ResponseEntity.status(HttpStatus.OK).body(discardedTweetUseCase.execute());
     }
 }

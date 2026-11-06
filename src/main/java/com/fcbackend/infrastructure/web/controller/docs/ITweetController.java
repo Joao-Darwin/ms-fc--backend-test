@@ -2,6 +2,7 @@ package com.fcbackend.infrastructure.web.controller.docs;
 
 import com.fcbackend.infrastructure.web.dto.request.CreateTweetRequestDTO;
 import com.fcbackend.infrastructure.web.dto.response.CreateTweetResponseDTO;
+import com.fcbackend.infrastructure.web.dto.response.DiscardedTweetsResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -98,4 +99,21 @@ public interface ITweetController {
             )
             UUID id
     );
+
+    @Operation(
+            summary = "Retorna a lista de todos os tweet descartados",
+            description = "Retorna a lista de todos os tweets que foram descartados"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista retornada com sucesso."
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno inesperado.",
+                    content = @Content
+            )
+    })
+    ResponseEntity<DiscardedTweetsResponseDTO> getDiscarded();
 }

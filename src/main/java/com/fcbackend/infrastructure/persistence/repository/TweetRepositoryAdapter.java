@@ -5,6 +5,7 @@ import com.fcbackend.domain.repository.TweetRepository;
 import com.fcbackend.infrastructure.persistence.entity.TweetEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,5 +30,12 @@ public class TweetRepositoryAdapter implements TweetRepository {
     @Override
     public Optional<Tweet> findById(UUID id) {
         return tweetJpaRepository.findById(id).map(TweetMapper::toDomain);
+    }
+
+    @Override
+    public List<Tweet> getDiscarded() {
+        return tweetJpaRepository.getAllWithStatusDiscarded()
+                .stream()
+                .map(TweetMapper::toDomain).toList();
     }
 }
